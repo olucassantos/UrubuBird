@@ -66,6 +66,9 @@ menu_jogar = fonte_menu.render("Aperte Espaço para Jogar", True, (255, 255, 255
 # Loop do jogo
 jogo_comecou = False
 
+# Gravidade do urubu
+gravidade = 1
+
 while True:
     # Checa os eventos do jogo
     for evento in pygame.event.get():
@@ -81,6 +84,7 @@ while True:
         if evento.type == pygame.KEYDOWN:
             if evento.key == pygame.K_SPACE:
                 jogo_comecou = True
+                gravidade = -30
 
     # Preenche a tela com a cor laranja
     tela.fill((205, 92, 92))
@@ -116,6 +120,12 @@ while True:
             index_urubu_voando -= 1.2
         else:
             index_urubu_voando += 1.2
+
+        # Aumenta a gravidade
+        gravidade += 3
+
+        # Adiciona a gravidade ao urubu
+        urubu_retangulo_voando.y += gravidade
 
         # Desenha o urubu voando na tela
         tela.blit(lista_urubu_voando[int(index_urubu_voando)], urubu_retangulo_voando)
