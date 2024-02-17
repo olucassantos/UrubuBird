@@ -78,6 +78,10 @@ while True:
             # Fecha o jogo
             exit()
 
+        if evento.type == pygame.KEYDOWN:
+            if evento.key == pygame.K_SPACE:
+                jogo_comecou = True
+
     # Preenche a tela com a cor laranja
     tela.fill((205, 92, 92))
 
@@ -109,9 +113,9 @@ while True:
 
         # Atualiza o índice do urubu para animar
         if animaVooReverso:
-            index_urubu_voando -= 1
+            index_urubu_voando -= 1.2
         else:
-            index_urubu_voando += 1
+            index_urubu_voando += 1.2
 
         # Desenha o urubu voando na tela
         tela.blit(lista_urubu_voando[int(index_urubu_voando)], urubu_retangulo_voando)
