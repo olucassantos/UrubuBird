@@ -53,6 +53,9 @@ for imagem in range(5):
 # Carrega as imagens do urubu voando
 for imagem in range(5, 10):
     urubu_voando_superficie = pygame.image.load(f"assets/pulo/tile00{imagem}.png") # Carrega a imagem do urubu voando
+    # Rotaciona em 35 graus a imagem do urubu
+    urubu_voando_superficie = pygame.transform.rotate(urubu_voando_superficie, -35)
+    
     lista_urubu_voando.append(urubu_voando_superficie)
 
 # Cria o retângulo do urubu a partir da lista de imagens
@@ -84,7 +87,8 @@ while True:
         if evento.type == pygame.KEYDOWN:
             if evento.key == pygame.K_SPACE:
                 jogo_comecou = True
-                gravidade = -30
+                ativaAnimacao = True
+                gravidade = -50
 
     # Preenche a tela com a cor laranja
     tela.fill((205, 92, 92))
@@ -116,13 +120,14 @@ while True:
     else:
 
         # Atualiza o índice do urubu para animar
-        if animaVooReverso:
-            index_urubu_voando -= 1.2
-        else:
-            index_urubu_voando += 1.2
+        if ativaAnimacao:
+            if animaVooReverso:
+                index_urubu_voando -= 1.2
+            else:
+                index_urubu_voando += 1.2
 
         # Aumenta a gravidade
-        gravidade += 3
+        gravidade += 7
 
         # Adiciona a gravidade ao urubu
         urubu_retangulo_voando.y += gravidade
@@ -135,6 +140,7 @@ while True:
             animaVooReverso = True
         elif index_urubu_voando <= 0:
             animaVooReverso = False
+            ativaAnimacao = False
 
 
     # Atualiza a tela para mostrar as mudanças
