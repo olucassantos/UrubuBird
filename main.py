@@ -43,7 +43,8 @@ index_urubu_voando = 0 # Índice para controlar a animação do urubu
 
 lista_urubu_parado = [] # Lista para armazenar as imagens do urubu
 lista_urubu_voando = [] # Lista para armazenar as imagens do urubu voando
-animaVooReverso = False
+
+animaVooReverso = False # Faz com que a animação do urubu voando seja reversa
 
 # Carrega as imagens do urubu parado
 for imagem in range(5):
@@ -72,6 +73,7 @@ jogo_comecou = False
 # Gravidade do urubu
 gravidade = 1
 
+# LAÇO PRINCIPAL DO JOGO
 while True:
     # Checa os eventos do jogo
     for evento in pygame.event.get():
@@ -84,11 +86,13 @@ while True:
             # Fecha o jogo
             exit()
 
+        # Verifica se uma tecla foi pressionada
         if evento.type == pygame.KEYDOWN:
+            # Verifica se a tecla pressionada foi a barra de espaço
             if evento.key == pygame.K_SPACE:
-                jogo_comecou = True
-                ativaAnimacao = True
-                gravidade = -50
+                jogo_comecou = True # Inicia o jogo
+                ativaAnimacao = True # Ativa a animação do urubu
+                gravidade = -50 # Diminui a gravidade do urubu para ele subir
 
     # Preenche a tela com a cor laranja
     tela.fill((205, 92, 92))
@@ -103,6 +107,12 @@ while True:
     tela.blit(arvore, (0, 0))
     tela.blit(vagalumes, (0, 0))
 
+
+    # Escreve na tela a posicao do urubu
+    fonte = pygame.font.Font(None, 36)
+    tela.blit(fonte.render(f"Y: {urubu_retangulo_voando.y}", True, (255, 255, 255)), (0, 0))
+
+    # Checa se o jogo não começou
     if not jogo_comecou:
         # Desenha o título na tela na posição central usando o tamanho da tela e a largura do texto
         tela.blit(titulo, (tamanho_tela[0] / 2 - titulo.get_width() / 2, 50))
@@ -111,13 +121,17 @@ while True:
 
         # Desenha o urubu na tela
         tela.blit(lista_urubu_parado[int(index_urubu_parado)], urubu_retangulo_parado)
+
         # Atualiza o índice do urubu para animar
         index_urubu_parado += 0.3
         # Checa se o índice do urubu é maior que o tamanho da lista de imagens
         if index_urubu_parado >= len(lista_urubu_parado):
             index_urubu_parado = 0
 
-    else:
+        # Reseta a posição do urubu
+        urubu_retangulo_voando.y = 250
+
+    else: # Se o jogo começou
 
         # Atualiza o índice do urubu para animar
         if ativaAnimacao:
@@ -142,6 +156,9 @@ while True:
             animaVooReverso = False
             ativaAnimacao = False
 
+        # Verifica se o urubu saiu da tela
+        if urubu_retangulo_voando.top > 540:
+            jogo_comecou = False
 
     # Atualiza a tela para mostrar as mudanças
     pygame.display.update()
