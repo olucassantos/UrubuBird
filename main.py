@@ -1,4 +1,68 @@
 import pygame
+import random
+
+def adicionaNovoObstaculo(lista_senhoras, lista_senhores):
+    # Definier a posição X do obstáculo
+    x = random.randint(1000, 1500)
+    y = random.randint(600, 700)
+    # Cria o retângulo da senhora a partir da imagem
+    senhora_retangulo = senhora.get_rect(midbottom = (x, y)) # Cria o retângulo da senhora
+
+    x = random.randint(1000, 1500)
+    y = random.randint(-80, -30)
+
+    senhor_retangulo = senhor.get_rect(midtop = (x, y)) # Cria o retângulo do senhor
+
+    # Adiciona a senhora a lista de obstáculos
+    lista_senhoras.append(senhora_retangulo)
+    lista_senhores.append(senhor_retangulo)
+
+def desenhaAnimaObstaculos(lista_senhoras, lista_senhores):
+    global jogo_comecou, velocidade_obstaculos
+
+    # Laço que passa em todos os obstáculos da lista
+    for obstaculo in lista_senhoras:
+        # Movimenta o obstáculo para a esquerda
+        obstaculo.x -= velocidade_obstaculos
+        obstaculo_hitbox = obstaculo.inflate(-400, -275) # Cria o retângulo do hitbox da obstaculo
+        obstaculo_hitbox.center = obstaculo.center
+
+        # Desenha o obstáculo na tela
+        tela.blit(senhora, obstaculo)
+
+        # Checa se o obstáculo saiu da tela
+        if obstaculo.right < 0:
+            # Remove o obstáculo da lista
+            lista_senhoras.remove(obstaculo)
+
+        # Checa se o urubu colidiu com o obstáculo
+        if urubu_retangulo_hitbox.colliderect(obstaculo_hitbox):
+            jogo_comecou = False
+            # limpa a lista de obstáculos
+            lista_senhoras.clear()
+            lista_senhores.clear()
+
+    for obstaculo in lista_senhores:
+        # Movimenta o obstáculo para a esquerda
+        obstaculo.x -= velocidade_obstaculos
+        obstaculo_hitbox = obstaculo.inflate(-200, -100) # Cria o retângulo do hitbox da obstaculo
+        obstaculo_hitbox.center = obstaculo.center
+
+
+        # Desenha o obstáculo na tela
+        tela.blit(senhor, obstaculo)
+
+        # Checa se o obstáculo saiu da tela
+        if obstaculo.right < 0:
+            # Remove o obstáculo da lista
+            lista_senhores.remove(obstaculo)
+
+        # Checa se o urubu colidiu com o obstáculo
+        if urubu_retangulo_hitbox.colliderect(obstaculo_hitbox):
+            jogo_comecou = False
+            # limpa a lista de obstáculos
+            lista_senhores.clear()
+            lista_senhoras.clear()
 
 # Inicialia a biblioteca do pygame
 pygame.init()
@@ -16,6 +80,7 @@ pygame.display.set_caption("Urubu Runner")
 # Importa a fonte
 fonte_titulo = pygame.font.Font('assets/fontes/LeafCrownDemoRegular.ttf', 150)
 fonte_menu = pygame.font.Font('assets/fontes/LeafCrownDemoOutline.ttf', 80)
+fonte_cronometro = pygame.font.Font(None, 36)
 
 # Planos de Fundo
 vagalumes = pygame.image.load('assets/planoFundo/fireflys.png') # Carrega a imagem dos vagalumes
@@ -63,9 +128,26 @@ for imagem in range(5, 10):
 urubu_retangulo_parado = lista_urubu_parado[index_urubu_parado].get_rect(center = (480, 350)) # Cria o retangulo do urubu
 urubu_retangulo_voando = lista_urubu_voando[index_urubu_parado].get_rect(center = (100, 250)) # Cria o retangulo do urubu
 
+# Cria um retângulo para o hitbox do urubu que é menor que o retângulo do urubu
+urubu_retangulo_hitbox = urubu_retangulo_voando.inflate(-120, -120)
+
 # Textos do Menu
 titulo = fonte_titulo.render("Urubu Runner", True, (255, 255, 255)) # Renderiza o texto do título
 menu_jogar = fonte_menu.render("Aperte Espaço para Jogar", True, (255, 255, 255)) # Renderiza o texto do menu
+
+# Importa a imagem dos obstáculos
+senhora = pygame.image.load('assets/obstaculos/Rock_statue_mother_grass_shadow.png') # Carrega a imagem da senhora
+# Duplica o tamanho da senhora
+senhora = pygame.transform.scale2x(senhora)
+
+senhor = pygame.image.load('assets/obstaculos/Rock_statue_old_man_grass_shadow.png') # Carrega a imagem do senhor
+# Duplica o tamanho do senhor
+senhor = pygame.transform.scale2x(senhor)
+senhor = pygame.transform.rotate(senhor, 180)
+
+# Cria um lista de obstáculos
+lista_senhoras = []
+lista_senhores = []
 
 # Loop do jogo
 jogo_comecou = False
@@ -73,11 +155,33 @@ jogo_comecou = False
 # Gravidade do urubu
 gravidade = 1
 
+# Velocidade dos obstáculos
+velocidade_obstaculos = 20
+
+# Cria um evento para adicionar novos obstáculos
+novo_obstaculo_event = pygame.USEREVENT + 1
+# Ativa o evento de adicionar novos obstáculos a cada 2 segundos
+pygame.time.set_timer(novo_obstaculo_event, 3000)
+
+novo_segundo_event = pygame.USEREVENT + 2
+pygame.time.set_timer(novo_segundo_event, 1000)
+
+# Cria um cronômetro para controlar o tempo do jogo
+cronometro = 0
+
 # LAÇO PRINCIPAL DO JOGO
 while True:
     # Checa os eventos do jogo
     for evento in pygame.event.get():
         print(evento)
+
+        if evento.type == novo_obstaculo_event:
+            if jogo_comecou:
+                adicionaNovoObstaculo(lista_senhoras, lista_senhores)
+
+        if evento.type == novo_segundo_event:
+            if jogo_comecou:
+                cronometro += 1
 
         if evento.type == pygame.QUIT:
             # Fecha a janela
@@ -92,7 +196,7 @@ while True:
             if evento.key == pygame.K_SPACE:
                 jogo_comecou = True # Inicia o jogo
                 ativaAnimacao = True # Ativa a animação do urubu
-                gravidade = -50 # Diminui a gravidade do urubu para ele subir
+                gravidade = -21 # Diminui a gravidade do urubu para ele subir
 
     # Preenche a tela com a cor laranja
     tela.fill((205, 92, 92))
@@ -106,11 +210,6 @@ while True:
     tela.blit(grama_estrada, (0, 0))
     tela.blit(arvore, (0, 0))
     tela.blit(vagalumes, (0, 0))
-
-
-    # Escreve na tela a posicao do urubu
-    fonte = pygame.font.Font(None, 36)
-    tela.blit(fonte.render(f"Y: {urubu_retangulo_voando.y}", True, (255, 255, 255)), (0, 0))
 
     # Checa se o jogo não começou
     if not jogo_comecou:
@@ -131,6 +230,8 @@ while True:
         # Reseta a posição do urubu
         urubu_retangulo_voando.y = 250
 
+        cronometro = 0 # Reseta o cronômetro
+
     else: # Se o jogo começou
 
         # Atualiza o índice do urubu para animar
@@ -147,7 +248,12 @@ while True:
         urubu_retangulo_voando.y += gravidade
 
         # Desenha o urubu voando na tela
+        urubu_retangulo_hitbox.center = urubu_retangulo_voando.center
         tela.blit(lista_urubu_voando[int(index_urubu_voando)], urubu_retangulo_voando)
+
+        # Desenha o cronômetro na tela
+        cronometro_texto = fonte_cronometro.render(f"Tempo: {cronometro}", True, (255, 255, 255))
+        tela.blit(cronometro_texto, (10, 10))
 
         # Checa se o índice do urubu é maior que o tamanho da lista de imagens
         if index_urubu_voando >= len(lista_urubu_voando) - 1:
@@ -159,6 +265,12 @@ while True:
         # Verifica se o urubu saiu da tela
         if urubu_retangulo_voando.top > 540:
             jogo_comecou = False
+
+        # Chama a função para desenhar e animar os obstáculos
+        desenhaAnimaObstaculos(lista_senhoras, lista_senhores)
+
+        if cronometro % 10 == 0:
+            velocidade_obstaculos += 2
 
     # Atualiza a tela para mostrar as mudanças
     pygame.display.update()
