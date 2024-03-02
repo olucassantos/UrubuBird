@@ -102,6 +102,43 @@ plantas = pygame.transform.scale(plantas, tamanho_tela)
 grama_estrada = pygame.transform.scale(grama_estrada, tamanho_tela)
 vagalumes = pygame.transform.scale(vagalumes, tamanho_tela)
 
+retangulos_fundos = {}
+
+# Retangulo dos fundos 1
+retangulos_fundos['fundo_floresta'] = []
+retangulos_fundos['arvores_arbustos'] = []
+retangulos_fundos['arvore'] = []
+retangulos_fundos['ceu'] = []
+retangulos_fundos['cipos'] = []
+retangulos_fundos['plantas'] = []
+retangulos_fundos['grama_estrada'] = []
+retangulos_fundos['vagalumes'] = []
+
+# Cria os retângulos dos planos de fundo
+retangulos_fundos['fundo_floresta'].append(fundo_floresta.get_rect(topleft = (0, 0)))
+retangulos_fundos['fundo_floresta'].append(fundo_floresta.get_rect(topleft = (960, 0)))
+
+retangulos_fundos['arvores_arbustos'].append(arvores_arbustos.get_rect(topleft = (0, 0)))
+retangulos_fundos['arvores_arbustos'].append(arvores_arbustos.get_rect(topleft = (960, 0)))
+
+retangulos_fundos['arvore'].append(arvore.get_rect(topleft = (0, 0)))
+retangulos_fundos['arvore'].append(arvore.get_rect(topleft = (960, 0)))
+
+retangulos_fundos['ceu'].append(ceu.get_rect(topleft = (0, 0)))
+retangulos_fundos['ceu'].append(ceu.get_rect(topleft = (960, 0)))
+
+retangulos_fundos['cipos'].append(cipos.get_rect(topleft = (0, 0)))
+retangulos_fundos['cipos'].append(cipos.get_rect(topleft = (960, 0)))
+
+retangulos_fundos['plantas'].append(plantas.get_rect(topleft = (0, 0)))
+retangulos_fundos['plantas'].append(plantas.get_rect(topleft = (960, 0)))
+
+retangulos_fundos['grama_estrada'].append(grama_estrada.get_rect(topleft = (0, 0)))
+retangulos_fundos['grama_estrada'].append(grama_estrada.get_rect(topleft = (960, 0)))
+
+retangulos_fundos['vagalumes'].append(vagalumes.get_rect(topleft = (0, 0)))
+retangulos_fundos['vagalumes'].append(vagalumes.get_rect(topleft = (960, 0)))
+
 # Jogador Urubu
 index_urubu_parado = 0 # Índice para controlar a animação do urubu
 index_urubu_voando = 0 # Índice para controlar a animação do urubu
@@ -202,17 +239,27 @@ while True:
     tela.fill((205, 92, 92))
 
     # Desenha o plano de fundo na tela
-    tela.blit(ceu, (0, 0))
-    tela.blit(fundo_floresta, (0, 0))
-    tela.blit(arvores_arbustos, (0, 0))
-    tela.blit(cipos, (0, 0))
-    tela.blit(plantas, (0, 0))
-    tela.blit(grama_estrada, (0, 0))
-    tela.blit(arvore, (0, 0))
-    tela.blit(vagalumes, (0, 0))
+    # tela.blit(ceu, (0, 0))
+    # tela.blit(fundo_floresta, (0, 0))
+    # tela.blit(arvores_arbustos, (0, 0))
+    # tela.blit(cipos, (0, 0))
+    # tela.blit(plantas, (0, 0))
+    # tela.blit(grama_estrada, (0, 0))
+    # tela.blit(arvore, (0, 0))
+    # tela.blit(vagalumes, (0, 0))
 
     # Checa se o jogo não começou
     if not jogo_comecou:
+        # Desenha o plano de fundo na tela
+        tela.blit(ceu, (0, 0))
+        tela.blit(fundo_floresta, (0, 0))
+        tela.blit(arvores_arbustos, (0, 0))
+        tela.blit(cipos, (0, 0))
+        tela.blit(plantas, (0, 0))
+        tela.blit(grama_estrada, (0, 0))
+        tela.blit(arvore, (0, 0))
+        tela.blit(vagalumes, (0, 0))
+
         # Desenha o título na tela na posição central usando o tamanho da tela e a largura do texto
         tela.blit(titulo, (tamanho_tela[0] / 2 - titulo.get_width() / 2, 50))
         # Desenha o menu na tela
@@ -233,6 +280,16 @@ while True:
         cronometro = 0 # Reseta o cronômetro
 
     else: # Se o jogo começou
+        # Anima os planos de fundo
+        for fundos in retangulos_fundos:
+            for retangulo in retangulos_fundos[fundos]:
+                retangulo.x -= 10
+                tela.blit(eval(fundos), retangulo)
+
+            if retangulos_fundos[fundos][0].right <= 0:
+                retangulos_fundos[fundos][0].x = 0
+                retangulos_fundos[fundos][1].x = 960
+
 
         # Atualiza o índice do urubu para animar
         if ativaAnimacao:
@@ -269,8 +326,8 @@ while True:
         # Chama a função para desenhar e animar os obstáculos
         desenhaAnimaObstaculos(lista_senhoras, lista_senhores)
 
-        if cronometro % 10 == 0:
-            velocidade_obstaculos += 2
+        if cronometro % 20 == 0:
+            velocidade_obstaculos += 1
 
     # Atualiza a tela para mostrar as mudanças
     pygame.display.update()
